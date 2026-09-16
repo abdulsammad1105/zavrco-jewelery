@@ -19,5 +19,11 @@
     "typecheck:backend": "npm run typecheck --workspace=backend",
     "typecheck:frontend": "npm run typecheck --workspace=frontend",
     "lint:frontend": "npm run lint --workspace=frontend"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
   }
 }
