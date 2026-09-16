@@ -63,6 +63,10 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`ZAVR.CO backend listening on http://localhost:${PORT}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`ZAVR.CO backend listening on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
