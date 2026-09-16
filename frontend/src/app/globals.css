@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  /* Black + champagne gold theme */
+  --color-obsidian: #0a0a0a;       /* page background — black */
+  --color-charcoal: #131313;       /* card/panel background */
+  --color-charcoal-light: #1a1a1a; /* lighter panel variant */
+  --color-silver: #c6a664;         /* primary gold accent */
+  --color-chrome: #9c8552;         /* secondary muted gold (labels, nav) */
+  --color-offwhite: #f5f3ef;       /* primary text — off-white */
+  --color-muted: #8a8478;          /* secondary/tertiary text */
+  --color-border: #2a2620;         /* dark warm-toned border */
+  --color-accent: #3a352b;         /* supporting dark-gold surface */
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-obsidian);
+  color: var(--color-offwhite);
+  font-family: var(--font-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-silver);
+  color: var(--color-obsidian);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-obsidian);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Editorial heading styles */
+.heading-display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+/* Subtle link underline animation */
+.link-hover {
+  position: relative;
+}
+.link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-offwhite);
+  transition: width 0.3s ease;
+}
+.link-hover:hover::after {
+  width: 100%;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin editorial divider */
+.divider-thin {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-border), transparent);
+}
+
+/* Editorial index numbering, e.g. 01 / 06 */
+.editorial-index {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--color-chrome);
+}
