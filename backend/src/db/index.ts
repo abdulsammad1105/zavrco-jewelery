@@ -21,10 +21,6 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL is required");
 }
 
-export const pool = new Pool({
-  connectionString: databaseUrl,
-  max: 1,
-  connectionTimeoutMillis: 10000,
-});
+export const pool = new Pool({ connectionString: databaseUrl });
 export const db = drizzle(pool, { schema });
 export { schema };
