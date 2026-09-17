@@ -30,6 +30,9 @@ export default async function Home() {
 
   return (
     <>
+      <div style={{background: "red", color: "white", padding: "20px", fontSize: "20px"}}>
+        API_URL is: {process.env.NEXT_PUBLIC_API_URL || "NOT SET"}
+      </div>
       <Hero />
       <BrandStatement />
       <FeaturedProducts products={featuredProducts} />
