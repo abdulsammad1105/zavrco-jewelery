@@ -21,7 +21,8 @@
     "lint:frontend": "npm run lint --workspace=frontend"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.2"
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.10"

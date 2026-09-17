@@ -1,26 +1,18 @@
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "../../../database/schema";
-
-const envCandidates = [
-  path.resolve(process.cwd(), ".env"),
-  path.resolve(process.cwd(), "backend/.env"),
-  path.resolve(process.cwd(), "../backend/.env"),
-];
-const envPath = envCandidates.find((candidate) => fs.existsSync(candidate));
-if (envPath) {
-  dotenv.config({ path: envPath });
-}
 
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+  throw new Error("DATABASE_URL environment variable is missing.");
 }
 
-export const pool = new Pool({ connectionString: databaseUrl });
-export const db = drizzle(pool, { schema });
+// Disable prepared statements for serverless connection poolers (e.g., Supabase / PgBouncer)
+const client = postgres(databaseUrl, {
+  prepare: false,
+  max: 1, // Restrict connection pool per serverless function instance
+});
+
+export const db = drizzle(client, { schema });
 export { schema };
