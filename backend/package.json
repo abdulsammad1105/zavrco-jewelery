@@ -19,7 +19,8 @@
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.2",
     "express": "^4.21.2",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
