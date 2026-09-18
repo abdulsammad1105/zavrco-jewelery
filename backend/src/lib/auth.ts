@@ -21,11 +21,17 @@ function getSecret(): string {
 }
 
 function sign(payload: string): string {
-  return crypto.createHmac("sha256", getSecret()).update(payload).digest("base64url");
+  return crypto
+    .createHmac("sha256", getSecret())
+    .update(payload)
+    .digest("base64url");
 }
 
 function encodeSession(userId: number): string {
-  const payload = JSON.stringify({ userId, exp: Date.now() + SESSION_MAX_AGE * 1000 });
+  const payload = JSON.stringify({
+    userId,
+    exp: Date.now() + SESSION_MAX_AGE * 1000,
+  });
   const encoded = Buffer.from(payload).toString("base64url");
   return `${encoded}.${sign(encoded)}`;
 }
@@ -35,7 +41,9 @@ function decodeSession(token: string): { userId: number } | null {
   if (!encoded || !signature) return null;
   const expected = sign(encoded);
   try {
-    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+    if (
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+    ) {
       return null;
     }
   } catch {
@@ -43,7 +51,8 @@ function decodeSession(token: string): { userId: number } | null {
   }
   try {
     const payload = JSON.parse(Buffer.from(encoded, "base64url").toString());
-    if (typeof payload.userId !== "number" || payload.exp < Date.now()) return null;
+    if (typeof payload.userId !== "number" || payload.exp < Date.now())
+      return null;
     return { userId: payload.userId };
   } catch {
     return null;
@@ -54,7 +63,10 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
@@ -68,8 +80,8 @@ export function createSession(res: Response, userId: number) {
   // explicit Domain=.zavr.co attribute added here if needed.
   res.cookie(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
     maxAge: SESSION_MAX_AGE * 1000,
   });

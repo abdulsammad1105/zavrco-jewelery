@@ -18,11 +18,17 @@ function getSecret(): string {
 }
 
 function sign(payload: string): string {
-  return crypto.createHmac("sha256", getSecret()).update(payload).digest("base64url");
+  return crypto
+    .createHmac("sha256", getSecret())
+    .update(payload)
+    .digest("base64url");
 }
 
 function encodeAdminSession(): string {
-  const payload = JSON.stringify({ admin: true, exp: Date.now() + ADMIN_SESSION_MAX_AGE * 1000 });
+  const payload = JSON.stringify({
+    admin: true,
+    exp: Date.now() + ADMIN_SESSION_MAX_AGE * 1000,
+  });
   const encoded = Buffer.from(payload).toString("base64url");
   return `${encoded}.${sign(encoded)}`;
 }
@@ -32,7 +38,9 @@ function decodeAdminSession(token: string): boolean {
   if (!encoded || !signature) return false;
   const expected = sign(encoded);
   try {
-    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+    if (
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+    ) {
       return false;
     }
   } catch {
@@ -54,7 +62,10 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 /** Checks email/password against the single fixed admin credential in env vars. */
-export function verifyAdminCredentials(email: string, password: string): boolean {
+export function verifyAdminCredentials(
+  email: string,
+  password: string,
+): boolean {
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
@@ -64,7 +75,10 @@ export function verifyAdminCredentials(email: string, password: string): boolean
     );
   }
 
-  const emailMatches = safeEqual(email.trim().toLowerCase(), adminEmail.trim().toLowerCase());
+  const emailMatches = safeEqual(
+    email.trim().toLowerCase(),
+    adminEmail.trim().toLowerCase(),
+  );
   const passwordMatches = safeEqual(password, adminPassword);
   return emailMatches && passwordMatches;
 }
@@ -73,8 +87,8 @@ export function createAdminSession(res: Response) {
   const token = encodeAdminSession();
   res.cookie(ADMIN_SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
     maxAge: ADMIN_SESSION_MAX_AGE * 1000,
   });
