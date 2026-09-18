@@ -33,9 +33,7 @@ if (!process.env.DATABASE_URL) {
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const FRONTEND_URL = (
-  process.env.FRONTEND_URL || "http://localhost:3000"
-).replace(/\/$/, "");
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 app.use(
   cors({
