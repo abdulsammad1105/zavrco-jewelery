@@ -4,6 +4,25 @@ import type { Request, Response } from "express";
 const ADMIN_SESSION_COOKIE = "zavr_admin_session";
 const ADMIN_SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days, in seconds
 
+function getCookieDomain(): string | undefined {
+  const domain = process.env.COOKIE_DOMAIN?.trim();
+  if (domain) return domain;
+  if (process.env.VERCEL === "1") return ".vercel.app";
+  return undefined;
+}
+
+function getCookieOptions(maxAge: number) {
+  const domain = getCookieDomain();
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none" as const,
+    path: "/",
+    maxAge,
+    ...(domain ? { domain } : {}),
+  };
+}
+
 function getSecret(): string {
   const secret = process.env.SESSION_SECRET;
   if (!secret) {
@@ -85,17 +104,13 @@ export function verifyAdminCredentials(
 
 export function createAdminSession(res: Response) {
   const token = encodeAdminSession();
-  res.cookie(ADMIN_SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: ADMIN_SESSION_MAX_AGE * 1000,
-  });
+  const options = getCookieOptions(ADMIN_SESSION_MAX_AGE * 1000);
+  res.cookie(ADMIN_SESSION_COOKIE, token, options);
 }
 
 export function destroyAdminSession(res: Response) {
-  res.clearCookie(ADMIN_SESSION_COOKIE, { path: "/" });
+  const domain = getCookieDomain();
+  res.clearCookie(ADMIN_SESSION_COOKIE, { path: "/", ...(domain ? { domain } : {}) });
 }
 
 export function isAdminSession(req: Request): boolean {

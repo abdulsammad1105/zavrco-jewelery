@@ -7,6 +7,25 @@ import { eq } from "drizzle-orm";
 const SESSION_COOKIE = "zavr_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days, in seconds
 
+function getCookieDomain(): string | undefined {
+  const domain = process.env.COOKIE_DOMAIN?.trim();
+  if (domain) return domain;
+  if (process.env.VERCEL === "1") return ".vercel.app";
+  return undefined;
+}
+
+function getCookieOptions(maxAge: number) {
+  const domain = getCookieDomain();
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none" as const,
+    path: "/",
+    maxAge,
+    ...(domain ? { domain } : {}),
+  };
+}
+
 function getSecret(): string {
   const secret = process.env.SESSION_SECRET;
   if (!secret) {
@@ -72,23 +91,13 @@ export async function verifyPassword(
 
 export function createSession(res: Response, userId: number) {
   const token = encodeSession(userId);
-  // No explicit `domain` set — the cookie defaults to the exact request host
-  // (e.g. "localhost"), which browsers match ignoring port. That lets the
-  // frontend (different port, same host) and backend share the session
-  // cookie during local development. In production, frontend and backend
-  // should share a top-level domain (e.g. zavr.co / api.zavr.co) with an
-  // explicit Domain=.zavr.co attribute added here if needed.
-  res.cookie(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: SESSION_MAX_AGE * 1000,
-  });
+  const options = getCookieOptions(SESSION_MAX_AGE * 1000);
+  res.cookie(SESSION_COOKIE, token, options);
 }
 
 export function destroySession(res: Response) {
-  res.clearCookie(SESSION_COOKIE, { path: "/" });
+  const domain = getCookieDomain();
+  res.clearCookie(SESSION_COOKIE, { path: "/", ...(domain ? { domain } : {}) });
 }
 
 export async function getCurrentUser(req: Request) {
