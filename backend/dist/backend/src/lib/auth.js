@@ -25,10 +25,16 @@ function getSecret() {
     return secret;
 }
 function sign(payload) {
-    return crypto_1.default.createHmac("sha256", getSecret()).update(payload).digest("base64url");
+    return crypto_1.default
+        .createHmac("sha256", getSecret())
+        .update(payload)
+        .digest("base64url");
 }
 function encodeSession(userId) {
-    const payload = JSON.stringify({ userId, exp: Date.now() + SESSION_MAX_AGE * 1000 });
+    const payload = JSON.stringify({
+        userId,
+        exp: Date.now() + SESSION_MAX_AGE * 1000,
+    });
     const encoded = Buffer.from(payload).toString("base64url");
     return `${encoded}.${sign(encoded)}`;
 }
@@ -71,8 +77,8 @@ function createSession(res, userId) {
     // explicit Domain=.zavr.co attribute added here if needed.
     res.cookie(SESSION_COOKIE, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         path: "/",
         maxAge: SESSION_MAX_AGE * 1000,
     });

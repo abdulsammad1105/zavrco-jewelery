@@ -21,10 +21,16 @@ function getSecret() {
     return secret;
 }
 function sign(payload) {
-    return crypto_1.default.createHmac("sha256", getSecret()).update(payload).digest("base64url");
+    return crypto_1.default
+        .createHmac("sha256", getSecret())
+        .update(payload)
+        .digest("base64url");
 }
 function encodeAdminSession() {
-    const payload = JSON.stringify({ admin: true, exp: Date.now() + ADMIN_SESSION_MAX_AGE * 1000 });
+    const payload = JSON.stringify({
+        admin: true,
+        exp: Date.now() + ADMIN_SESSION_MAX_AGE * 1000,
+    });
     const encoded = Buffer.from(payload).toString("base64url");
     return `${encoded}.${sign(encoded)}`;
 }
@@ -71,8 +77,8 @@ function createAdminSession(res) {
     const token = encodeAdminSession();
     res.cookie(ADMIN_SESSION_COOKIE, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         path: "/",
         maxAge: ADMIN_SESSION_MAX_AGE * 1000,
     });

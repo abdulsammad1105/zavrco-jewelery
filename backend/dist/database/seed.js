@@ -10,7 +10,7 @@ const CATEGORIES = [
     { name: "Bracelets", slug: "bracelets", image: "/products/apex-crystal-cuff.jpg" },
     { name: "Pendants", slug: "pendants", image: "/products/eclipse-spike-pendant.jpg" },
     { name: "Biker Chains", slug: "biker-chains", image: null },
-    { name: "Statement", slug: "statement", image: "/products/magnetic-noir-studs.jpg" },
+    { name: "Others", slug: "others", image: "/products/magnetic-noir-studs.jpg" },
 ];
 const COLLECTIONS = [
     { name: "Signature", slug: "signature", description: "Our core essentials — timeless pieces designed to be worn every day." },
@@ -47,7 +47,7 @@ const SEED_PRODUCTS = [
     {
         name: "Magnetic Noir Studs", slug: "magnetic-noir-studs",
         description: "Understated black stud pieces with a magnetic closure. A quiet statement.",
-        price: "1590", category: "statement", collection: "signature",
+        price: "1590", category: "Others", collection: "signature",
         material: "Stainless Steel, matte black finish", dimensions: "Diameter: 10mm",
         featured: false, isNew: true, stock: 24,
         images: ["/products/magnetic-noir-studs.jpg"],
